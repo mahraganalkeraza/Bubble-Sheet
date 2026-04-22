@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { CalibrationData, StudentResult } from '../types.ts';
-import { loadPdf, renderPdfPageToCanvas, processSinglePage, PDF_RENDER_SCALE } from '../engine.ts';
-import { runCombinedWorkflow } from '../workflow.ts';
+import { CalibrationData, StudentResult } from '../types';
+import { loadPdf, renderPdfPageToCanvas, processSinglePage, PDF_RENDER_SCALE } from '../engine';
+import { runCombinedWorkflow } from '../workflow';
 import { Loader2, Sparkles } from 'lucide-react';
 
 interface Props {

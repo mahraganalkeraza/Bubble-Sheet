@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as xlsx from 'xlsx';
-import { StudentResult } from '../types.ts';
+import { StudentResult } from '../types';
 import { DownloadCloud, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 
 interface Props {

@@ -1,5 +1,5 @@
 import jsQR from 'jsqr';
-import { CalibrationData, StudentResult, Box } from './types.ts';
+import { CalibrationData, StudentResult, Box } from './types';
 
 // We must declare cv and pdfjsLib since they are loaded via CDN
 declare const cv: any;

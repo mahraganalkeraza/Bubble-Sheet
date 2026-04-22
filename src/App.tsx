@@ -4,12 +4,12 @@
  */
 
 import React, { useState } from 'react';
-import { Phase, CalibrationData, StudentResult } from './types.ts';
-import { UploadView } from './components/UploadView.tsx';
-import { CalibrationView } from './components/CalibrationView.tsx';
-import { AnswerKeyView } from './components/AnswerKeyView.tsx';
-import { ProcessingView } from './components/ProcessingView.tsx';
-import { ResultsView } from './components/ResultsView.tsx';
+import { Phase, CalibrationData, StudentResult } from './types';
+import { UploadView } from './components/UploadView';
+import { CalibrationView } from './components/CalibrationView';
+import { AnswerKeyView } from './components/AnswerKeyView';
+import { ProcessingView } from './components/ProcessingView';
+import { ResultsView } from './components/ResultsView';
 
 export default function App() {
   const [phase, setPhase] = useState<Phase>('upload');

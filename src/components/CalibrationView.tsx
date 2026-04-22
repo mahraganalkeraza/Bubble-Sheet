@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CalibrationData, Point, Box } from '../types.ts';
-import { loadPdf, renderPdfPageToCanvas, PDF_RENDER_SCALE } from '../engine.ts';
+import { CalibrationData, Point, Box } from '../types';
+import { loadPdf, renderPdfPageToCanvas, PDF_RENDER_SCALE } from '../engine';
 import { Maximize, Save, ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface Props {
