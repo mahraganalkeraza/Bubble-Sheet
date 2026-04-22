@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { CalibrationData, StudentResult } from '../types.ts';
 import { loadPdf, renderPdfPageToCanvas, processSinglePage, PDF_RENDER_SCALE } from '../engine.ts';
-import { Loader2 } from 'lucide-react';
+import { runCombinedWorkflow } from '../workflow.ts';
+import { Loader2, Sparkles } from 'lucide-react';
 
 interface Props {
   pdfFile: File;
@@ -17,6 +18,7 @@ export function ProcessingView({
 }: Props) {
   const [progress, setProgress] = useState({ current: 0, total: 100 });
   const [isProcessing, setIsProcessing] = useState(true);
+  const [useAI, setUseAI] = useState(true);
 
   useEffect(() => {
     let active = true;
@@ -36,13 +38,18 @@ export function ProcessingView({
           
           if (!active) break;
           // Step 2: Process OpenCV + JSQR
-          const result = await processSinglePage(
+          let result = await processSinglePage(
             canvas, 
             calibration, 
             answerKey, 
             questionsCount, 
             optionsCount
           );
+
+          // Step 3: Run AI Workflow enhancement if requested
+          if (useAI) {
+            result = await runCombinedWorkflow(result, canvas, answerKey, questionsCount);
+          }
           
           results.push(result);
           setProgress({ current: i, total: numPages });
@@ -67,7 +74,7 @@ export function ProcessingView({
     return () => {
       active = false;
     };
-  }, [pdfFile, calibration, answerKey, questionsCount, optionsCount, onComplete]);
+  }, [pdfFile, calibration, answerKey, questionsCount, optionsCount, onComplete, useAI]);
 
   const percentage = progress.total > 0 ? Math.round((progress.current / progress.total) * 100) : 0;
 
@@ -86,11 +93,12 @@ export function ProcessingView({
             </div>
           )}
           
-          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest mb-2">
+          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest mb-2 flex items-center gap-2">
             {isProcessing ? 'Processing Papers' : 'Complete'}
+            {isProcessing && useAI && <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />}
           </h2>
           <p className="text-xs text-slate-400 mb-8 text-center font-medium">
-            Memory-safe serial loop. Do not close this tab.
+            {useAI ? 'OpenCV + Gemini AI Hybrid Workflow' : 'Memory-safe serial loop. Do not close this tab.'}
           </p>
 
           <div className="w-full bg-slate-100 rounded-full h-1.5 max-w-md mb-3 overflow-hidden">
