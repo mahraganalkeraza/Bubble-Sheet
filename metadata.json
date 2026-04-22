@@ -1,0 +1,6 @@
+{
+  "name": "Remix: Standalone OMR \u0026 QR Processor (V2)",
+  "description": "Client-side React app to process exam papers with OMR and QR codes, using PDF.js and OpenCV.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
