@@ -12,7 +12,16 @@ import { ProcessingView } from './components/ProcessingView';
 import { ResultsView } from './components/ResultsView';
 
 export default function App() {
-  const [phase, setPhase] = useState<Phase>('upload');
+  const [phase, setPhase] = useState<Phase>(() => {
+    const saved = localStorage.getItem('omr_results');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.length > 0) return 'results';
+      } catch (e) {}
+    }
+    return 'upload';
+  });
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   
   // Calibration data from localStorage or defaults
@@ -20,25 +29,43 @@ export default function App() {
     const saved = localStorage.getItem('omr_calibration');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.topRightAnchor && parsed.gridStart && parsed.qrBoxOffset) {
+          if (parsed.columnGap === undefined) parsed.columnGap = 300;
+          return parsed;
+        }
       } catch (e) {}
     }
     // Defaults for a 1000x1414 space (approx A4 aspect ratio)
     return {
-      topLeft: { x: 50, y: 50 },
-      topRight: { x: 950, y: 50 },
-      bottomLeft: { x: 50, y: 1364 },
-      bottomRight: { x: 950, y: 1364 },
-      qrBox: { x: 100, y: 100, width: 200, height: 200 },
-      omrBox: { x: 100, y: 350, width: 800, height: 900 }
+      topRightAnchor: { x: 900, y: 50 },
+      gridStart: { x: 200, y: 350 },
+      rowHeight: 30,
+      colWidth: 40,
+      columnGap: 300,
+      qrBoxOffset: { x: -300, y: 50, width: 200, height: 200 } // using absolute pixels relative to anchor for simplicity, or we can use %
     };
   });
 
   const [questionsCount, setQuestionsCount] = useState(50);
   const [optionsCount, setOptionsCount] = useState(4); // 4 = A,B,C,D
+  const [columnsCount, setColumnsCount] = useState(1);
   const [answerKey, setAnswerKey] = useState<Record<number, string>>({});
   
-  const [results, setResults] = useState<StudentResult[]>([]);
+  const [results, setResults] = useState<StudentResult[]>(() => {
+    const saved = localStorage.getItem('omr_results');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return [];
+  });
+
+  // Effect to update local storage when results change
+  React.useEffect(() => {
+    localStorage.setItem('omr_results', JSON.stringify(results));
+  }, [results]);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-[#1e293b] flex flex-col font-sans overflow-hidden">
@@ -82,6 +109,12 @@ export default function App() {
             <CalibrationView 
               pdfFile={pdfFile}
               calibration={calibration}
+              questionsCount={questionsCount}
+              setQuestionsCount={setQuestionsCount}
+              optionsCount={optionsCount}
+              setOptionsCount={setOptionsCount}
+              columnsCount={columnsCount}
+              setColumnsCount={setColumnsCount}
               onCalibrationChange={setCalibration}
               onSaveDefault={() => {
                 localStorage.setItem('omr_calibration', JSON.stringify(calibration));
@@ -109,6 +142,7 @@ export default function App() {
               calibration={calibration}
               questionsCount={questionsCount}
               optionsCount={optionsCount}
+              columnsCount={columnsCount}
               answerKey={answerKey}
               onComplete={(res) => {
                 setResults(res);

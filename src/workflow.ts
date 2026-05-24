@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { StudentResult, CalibrationData } from "./types";
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
 export async function processPageWithGemini(
   canvas: HTMLCanvasElement,
@@ -75,7 +75,7 @@ export async function runCombinedWorkflow(
   questionsCount: number
 ): Promise<StudentResult> {
   // If CV failed significantly, try AI enhancement
-  if (cvResult.status === 'failed_qr' || cvResult.status === 'failed_omr' || cvResult.status === 'needs_review') {
+  if (cvResult.status === 'needs_attention' || cvResult.status === 'failed_omr' || cvResult.status === 'needs_review') {
     console.log("CV Workflow struggled, invoking AI fallback...");
     const aiResult = await processPageWithGemini(canvas, answerKey, questionsCount);
     
